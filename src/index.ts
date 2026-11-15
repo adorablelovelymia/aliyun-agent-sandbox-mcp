@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import { realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
@@ -76,10 +79,24 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
   await server.connect(transport);
 }
 
-// Only start when executed directly, so tests can import createServer safely.
-const entry = process.argv[1];
-const isDirectRun = entry !== undefined && import.meta.url === new URL(`file://${entry}`).href;
-if (isDirectRun) {
+/**
+ * True when this file is the process entry point.
+ *
+ * Compares resolved paths instead of raw strings because npm installs the bin
+ * as a symlink (`node_modules/.bin/x -> ../pkg/dist/index.js`), so
+ * `process.argv[1]` is the link while `import.meta.url` is the real file.
+ */
+function isDirectRun(): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  try {
+    return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectRun()) {
   main().catch((error) => {
     const detail = error instanceof Error ? error.stack ?? error.message : String(error);
     process.stderr.write(`${SERVER_NAME} failed to start: ${detail}\n`);
