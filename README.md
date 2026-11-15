@@ -23,7 +23,7 @@
 - **多语言代码执行**：Python / JavaScript / TypeScript / Bash / R / Java（依赖 `code-interpreter-v1` 模板）
 - **零硬编码**：全部走环境变量或 `.env` 文件，不会把 API Key 写进代码
 - **输出有界**：单次工具返回超长时自动截断（头 + 尾保留），避免撑爆上下文
-- **仅需 Node.js ≥ 20.18.1**，通过 `npx` 零安装运行
+- **仅需 Node.js ≥ 20.19.0**，通过 `npx` 零安装运行
 - **TypeScript** 编写，带类型声明与单元测试
 
 ## 工具一览
@@ -206,6 +206,14 @@ file_list, file_make_dir, file_remove, file_rename
   ...
 ALL CHECKS PASSED
 ```
+
+## 运行环境要求
+
+**Node.js ≥ 20.19.0**。
+
+下界不是随手写的：上游 `e2b` 的 CJS 产物里用 `require()` 加载 ESM 的 `chalk`，
+而 `require(ESM)` 要到 Node 20.19.0 才默认开启。在 20.18.1 上启动会直接抛
+`ERR_REQUIRE_ESM`。本项目已在 20.19.0 / 22.12.0 / 26.13.1 上验证通过。
 
 ## 注意事项
 

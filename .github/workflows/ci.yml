@@ -12,7 +12,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 24]
+        # 20.19.0 is the declared floor: e2b's CJS bundle requires ESM chalk,
+        # and require(ESM) only became available by default in Node 20.19.0.
+        node: ['20.19.0', 22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

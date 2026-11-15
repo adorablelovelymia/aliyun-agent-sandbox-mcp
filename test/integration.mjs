@@ -55,8 +55,20 @@ try {
   const info = await call("sandbox_info", { sandbox_id: sandboxId });
   check("sandbox_info reports running", info.includes("state:      running"), info);
 
-  const listed = await call("sandbox_list", { limit: 5 });
-  check("sandbox_list contains the new sandbox", listed.includes(sandboxId), listed);
+  // The control-plane list endpoint is eventually consistent: a sandbox that was
+  // just created can take a few hundred milliseconds to appear, so poll briefly
+  // instead of asserting on the very first read.
+  let listed = "";
+  let listVisible = false;
+  for (const delay of [0, 500, 1000, 2000]) {
+    if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
+    listed = await call("sandbox_list", { limit: 5 });
+    if (listed.includes(sandboxId)) {
+      listVisible = true;
+      break;
+    }
+  }
+  check("sandbox_list sees the new sandbox (eventually consistent)", listVisible, listed);
 
   const command = await call("run_command", { sandbox_id: sandboxId, command: "python3 -c \"print(6*7)\"" });
   check("run_command runs a shell command", command.includes("42") && command.includes("[exitCode: 0]"), command);

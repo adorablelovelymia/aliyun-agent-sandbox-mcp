@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Raise the Node.js floor to **20.19.0**. e2b's CJS bundle `require()`s the ESM
+  `chalk` package, and `require(ESM)` is only enabled by default from Node
+  20.19.0, so 20.18.1 crashed with `ERR_REQUIRE_ESM` on startup.
+- GitHub Actions workflows used single-brace `${matrix.node}` /
+  `${secrets.NPM_TOKEN}` instead of `${{ }}`, so `setup-node` tried to install a
+  Node version literally named `${matrix.node}` and every job failed.
+- The integration test asserted on `sandbox_list` immediately after
+  `sandbox_create`; the control-plane list endpoint is eventually consistent
+  (observed ~500 ms lag), so the check now polls briefly. `sandbox_list`'s tool
+  description documents the behaviour.
+
 ## [0.1.0] - 2026-11-15
 
 First public release.

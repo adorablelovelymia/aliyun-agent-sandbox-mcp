@@ -125,7 +125,8 @@ export function registerTools(server: McpServer, config: SandboxConfig): void {
     "sandbox_list",
     {
       title: "List sandboxes",
-      description: "List sandboxes in the configured region, optionally filtered by state or template.",
+      description:
+        "List sandboxes in the configured region, optionally filtered by state or template. Note: the control-plane list endpoint is eventually consistent, so a sandbox created moments ago may not appear yet.",
       inputSchema: {
         state: z.enum(["running", "paused", "all"]).optional().describe('Filter by state, defaults to "all".'),
         template: z.string().min(1).optional().describe("Only list sandboxes created from this template."),

@@ -1,0 +1,11 @@
+fix: require Node >=20.19.0 and harden CI and the integration test
+
+- engines: >=20.19.0 (was >=20.18.1). e2b's CJS bundle require()s the ESM
+  chalk package; require(ESM) is only on by default from Node 20.19.0, so
+  20.18.1 crashed with ERR_REQUIRE_ESM at startup. Verified on 20.19.0,
+  22.12.0 and 26.13.1.
+- CI matrix now pins the floor explicitly: ['20.19.0', 22, 24].
+- Integration test polls sandbox_list briefly: the control-plane list
+  endpoint is eventually consistent (~500 ms observed), which made the
+  previous single-shot assertion flaky.
+- Document that behaviour in the sandbox_list tool description.
