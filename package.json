@@ -1,0 +1,66 @@
+{
+  "name": "aliyun-agent-sandbox-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Alibaba Cloud Agent Sandbox (阿里云智能体沙箱): run commands, execute Python/JS code and manage files in cloud sandboxes via the E2B-compatible API.",
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "alibaba-cloud",
+    "aliyun",
+    "agent-sandbox",
+    "sandbox",
+    "e2b",
+    "code-interpreter",
+    "ai-agent",
+    "llm"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "aliyun-agent-sandbox-mcp": "dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.18.1"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:unit": "node --test test/unit.test.mjs",
+    "test:integration": "node test/integration.mjs",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adorablelovelymia/aliyun-agent-sandbox-mcp.git"
+  },
+  "homepage": "https://github.com/adorablelovelymia/aliyun-agent-sandbox-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/adorablelovelymia/aliyun-agent-sandbox-mcp/issues"
+  },
+  "dependencies": {
+    "@e2b/code-interpreter": "^2.9.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "e2b": "^2.64.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
