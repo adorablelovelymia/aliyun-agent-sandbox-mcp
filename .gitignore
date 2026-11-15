@@ -9,3 +9,6 @@ coverage/
 # editor / tooling scratch
 .dsh-*.lock
 *.tgz
+
+# scratch
+COMMIT_MSG.tmp
