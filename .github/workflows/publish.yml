@@ -22,17 +22,22 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run test:unit
+      # Query the public registry over plain HTTP: the packument is readable
+      # anonymously, so this cannot be confused by a missing or invalid token
+      # the way npm view can (it exits non-zero on ENEEDAUTH).
       - name: Check whether this version is already published
         id: check
         run: |
           NAME=$(node -p "require('./package.json').name")
           VERSION=$(node -p "require('./package.json').version")
-          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
-            echo "published=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::$VERSION is already on npm; skipping publish."
-          else
-            echo "published=false" >> "$GITHUB_OUTPUT"
+          if curl -sf --max-time 30 "https://registry.npmjs.org/$NAME" -o /tmp/packument.json; then
+            if node -e "const j=require('/tmp/packument.json'); process.exit(j.versions && j.versions['$VERSION'] ? 0 : 1)"; then
+              echo "published=true" >> "$GITHUB_OUTPUT"
+              echo "::notice::$NAME@$VERSION is already on npm; skipping publish."
+              exit 0
+            fi
           fi
+          echo "published=false" >> "$GITHUB_OUTPUT"
       - name: Publish to npm
         if: steps.check.outputs.published == 'false'
         run: npm publish --access public --provenance
